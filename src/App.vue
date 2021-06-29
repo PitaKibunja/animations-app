@@ -1,10 +1,14 @@
 <template>
+<div class="container">
+  <list-data></list-data>         
+</div>
   <div class="container">
     <div class="block" :class="{animate:animateBlock}"></div>
     <button @click="animatedBlock">Animate</button>
   </div>
   <div class="container">
     <transition
+    :css="false"
      name="para" 
       @before-enter="beforeEnter"
       @before-leave="beforeLeave" 
@@ -12,6 +16,8 @@
       @after-enter="afterEnter"
       @leave="leave"
       @after-leave="afterLeave"
+      @enter-cancelled="enterCancelled"
+      @leave-cancelled="leaveCancelled"
       >
     <p v-if="paraIsVisible">This is only sometimes visible...</p>
     </transition>
@@ -34,19 +40,38 @@
 </template>  
 
 <script>
+import ListData from './components/ListData.vue'
 export default {
+  components:{ListData},
   data() {
     return { 
       animateBlock:false,
       dialogIsVisible: false,
       paraIsVisible:false,
-      usersAreVisible:false
+      usersAreVisible:false,
+      enterInterval:null,
+      leaveInterval:null
        };
   },
   methods: {
-    leave(el){
+    enterCancelled(){
+      clearInterval(this.enterInterval)
+    },
+    leaveCancelled(){
+      clearInterval(this.leaveInterval)
+    },
+    leave(el,done){
       console.log('Leave')
       console.log(el)
+      let round=1
+      this.leaveInterval=setInterval(()=>{
+        el.style.opacity=1-round*0.01
+        round++
+        if(round>100){
+          clearInterval(this.leaveInterval)
+          done()
+        }
+      },20)
     }
     ,
     afterLeave(el){
@@ -59,19 +84,31 @@ export default {
       console.log(el)
     }
     ,
-    enter(el){
+    enter(el,done){
       console.log('enter')
       console.log(el)
+      let round=1
+      this.enterInterval=setInterval(()=>{
+        el.style.opacity=round*0.01
+        round++
+        if(round>100){
+          clearInterval(this.enterInterval)
+          done()
+        }
+      },20)
     }
     ,
   beforeLeave(el){
     console.log('beforeLeave()')
     console.log(el)
+    el.style.opacity=1
   }
 ,
     beforeEnter(el){
       console.log('beforeEnter()')
       console.log(el)
+      el.style.opacity=0
+
     }
     ,
     showUsers(){
@@ -139,18 +176,18 @@ button:active {
   border: 2px solid #ccc;
   border-radius: 12px;
 }
-.animate{
+/* .animate{
   /* transform: translateX(-150px); */
-  animation: slide-scale 1s ease-out forwards;
+  /* animation: slide-scale 1s ease-out forwards; */
 
-}
+/* }  */
 /* .v-enter-from{
   /* opacity: 0;
   transform: translateY(-30px); */
 /* }  */
-.para-enter-active{
+/* .para-enter-active{
   animation: slide-scale 2s ease-out;
-}
+} */
 /* .v-enter-to{
   /* opacity: 1;
   transform: translateY(); */
@@ -159,9 +196,9 @@ button:active {
   opacity: 1;
   transform: translateY(0);
 } */
-.para-leave-active{
+/* .para-leave-active{
  animation: slide-scale 0.3s ease-in;
-}
+} */
 /* .v-leave-to{
   opacity: 0;
   transform: translateY(-30px);
