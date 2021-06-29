@@ -4,7 +4,15 @@
     <button @click="animatedBlock">Animate</button>
   </div>
   <div class="container">
-    <transition name="para">
+    <transition
+     name="para" 
+      @before-enter="beforeEnter"
+      @before-leave="beforeLeave" 
+      @enter="enter" 
+      @after-enter="afterEnter"
+      @leave="leave"
+      @after-leave="afterLeave"
+      >
     <p v-if="paraIsVisible">This is only sometimes visible...</p>
     </transition>
     <button @click="toggleParagraph">Toggle Paragraph</button>
@@ -17,6 +25,12 @@
   <div class="container">
     <button @click="showDialog">Show Dialog</button>
   </div>
+  <div class="container">
+    <transition name="fade-button" mode="out-in">
+        <button @click="showUsers" v-if="!usersAreVisible">Show Users</button>
+        <button @click="hideUsers" v-else>Hide Users</button>
+    </transition>
+  </div>
 </template>  
 
 <script>
@@ -25,10 +39,48 @@ export default {
     return { 
       animateBlock:false,
       dialogIsVisible: false,
-      paraIsVisible:false
+      paraIsVisible:false,
+      usersAreVisible:false
        };
   },
   methods: {
+    leave(el){
+      console.log('Leave')
+      console.log(el)
+    }
+    ,
+    afterLeave(el){
+      console.log('after Leave')
+      console.log(el)
+    }
+    ,
+    afterEnter(el){
+      console.log('after Enter...')
+      console.log(el)
+    }
+    ,
+    enter(el){
+      console.log('enter')
+      console.log(el)
+    }
+    ,
+  beforeLeave(el){
+    console.log('beforeLeave()')
+    console.log(el)
+  }
+,
+    beforeEnter(el){
+      console.log('beforeEnter()')
+      console.log(el)
+    }
+    ,
+    showUsers(){
+      this.usersAreVisible=true
+    },
+    hideUsers(){
+      this.usersAreVisible=false
+    }
+    ,
     toggleParagraph(){
       this.paraIsVisible=!this.paraIsVisible
     },
@@ -97,7 +149,7 @@ button:active {
   transform: translateY(-30px); */
 /* }  */
 .para-enter-active{
-  animation: slide-scale 0.3s ease-out;
+  animation: slide-scale 2s ease-out;
 }
 /* .v-enter-to{
   /* opacity: 1;
@@ -115,8 +167,21 @@ button:active {
   transform: translateY(-30px);
 } */
 
-
-
+.fade-button-enter-from,
+.fade-button-leave-to{
+  opacity: 0;
+}
+.fade-button-enter-active{
+  transition: opacity 0.3s ease-out;
+}
+.fade-button-leave-active{
+  transition: opacity 0.3s ease-in;
+}
+.fade-button-enter-to,
+.fade-button-leave-from
+{
+  opacity: 1;
+}
 
 @keyframes slide-scale{
   0%{
