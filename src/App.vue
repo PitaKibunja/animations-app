@@ -1,48 +1,13 @@
 <template>
-<div class="container">
-  <list-data></list-data>         
-</div>
-  <div class="container">
-    <div class="block" :class="{animate:animateBlock}"></div>
-    <button @click="animatedBlock">Animate</button>
-  </div>
-  <div class="container">
-    <transition
-    :css="false"
-     name="para" 
-      @before-enter="beforeEnter"
-      @before-leave="beforeLeave" 
-      @enter="enter" 
-      @after-enter="afterEnter"
-      @leave="leave"
-      @after-leave="afterLeave"
-      @enter-cancelled="enterCancelled"
-      @leave-cancelled="leaveCancelled"
-      >
-    <p v-if="paraIsVisible">This is only sometimes visible...</p>
-    </transition>
-    <button @click="toggleParagraph">Toggle Paragraph</button>
-  </div>
-  
-    <base-modal @close="hideDialog" :open="dialogIsVisible">
-    <p>This is a test dialog!</p>
-    <button @click="hideDialog">Close it!</button>
-  </base-modal>
-  <div class="container">
-    <button @click="showDialog">Show Dialog</button>
-  </div>
-  <div class="container">
-    <transition name="fade-button" mode="out-in">
-        <button @click="showUsers" v-if="!usersAreVisible">Show Users</button>
-        <button @click="hideUsers" v-else>Hide Users</button>
-    </transition>
-  </div>
+<router-view></router-view>
 </template>  
 
 <script>
-import ListData from './components/ListData.vue'
+
 export default {
-  components:{ListData},
+  components:{
+    // ListData
+    },
   data() {
     return { 
       animateBlock:false,
